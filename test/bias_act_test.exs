@@ -1,4 +1,4 @@
-defmodule ArmLLM.BiasActTest do
+defmodule InferLLM.BiasActTest do
   use ExUnit.Case, async: true
 
   defp call(act, bias, activation, outer, inner) do

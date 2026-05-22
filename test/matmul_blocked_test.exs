@@ -1,4 +1,4 @@
-defmodule ArmLLM.MatmulBlockedTest do
+defmodule InferLLM.MatmulBlockedTest do
   @moduledoc """
   Verify the cache-blocked matmul path produces identical results to
   the reference for shapes that trigger it (K > 256).

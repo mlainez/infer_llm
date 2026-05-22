@@ -1,4 +1,4 @@
-defmodule ArmLLM.LinearTest do
+defmodule InferLLM.LinearTest do
   use ExUnit.Case, async: true
 
   defp linear(act_t, w_t, bias_t, activation \\ "none") do

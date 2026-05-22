@@ -62,7 +62,7 @@ defp encode(text) do
   outputs["last_hidden_state"]
   |> Nx.mean(axes: [1])
   |> Nx.squeeze()
-  |> ArmAI.Embeddings.l2_normalize()
+  |> NxPrimitives.Embeddings.l2_normalize()
 end
 ```
 

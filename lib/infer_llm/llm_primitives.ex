@@ -1,4 +1,4 @@
-defmodule ArmLLM.Primitives do
+defmodule InferLLM.Primitives do
   @moduledoc """
   Helpers for transformer-LM architectures (Llama / Mistral / Phi / Qwen):
   RMSNorm, RoPE, plus small utilities.
@@ -61,7 +61,7 @@ defmodule ArmLLM.Primitives do
 
   ## Example
 
-      out = ArmLLM.Primitives.rmsnorm(x, gamma, 1.0e-5)
+      out = InferLLM.Primitives.rmsnorm(x, gamma, 1.0e-5)
   """
   def rmsnorm(%Nx.Tensor{} = x, %Nx.Tensor{} = gamma, epsilon \\ 1.0e-5) do
     shape = Nx.shape(x) |> Tuple.to_list()

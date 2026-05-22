@@ -1,4 +1,4 @@
-defmodule ArmLLM.LLMLinearTest do
+defmodule InferLLM.LLMLinearTest do
   use ExUnit.Case, async: true
 
   defp arm(t), do: Nx.backend_copy(t, NxArm.Backend)
@@ -24,7 +24,7 @@ defmodule ArmLLM.LLMLinearTest do
     x = Nx.iota({3, 8}, type: :f32) |> Nx.divide(100) |> Nx.sin()
     w = Nx.iota({5, 8}, type: :f32) |> Nx.divide(100) |> Nx.cos()
 
-    got = ArmLLM.Primitives.linear(arm(x), arm(w), nil)
+    got = InferLLM.Primitives.linear(arm(x), arm(w), nil)
     ref = ref_linear(x, w, nil, :none)
 
     diff = Nx.subtract(Nx.backend_copy(got, Nx.BinaryBackend), ref) |> Nx.abs() |> Nx.reduce_max() |> Nx.to_number()
@@ -36,7 +36,7 @@ defmodule ArmLLM.LLMLinearTest do
     w = Nx.iota({3, 4}, type: :f32) |> Nx.divide(50) |> Nx.subtract(0.5)
     b = Nx.tensor([0.1, -0.2, 0.3])
 
-    got = ArmLLM.Primitives.linear(arm(x), arm(w), arm(b), :relu)
+    got = InferLLM.Primitives.linear(arm(x), arm(w), arm(b), :relu)
     ref = ref_linear(x, w, b, :relu)
 
     diff = Nx.subtract(Nx.backend_copy(got, Nx.BinaryBackend), ref) |> Nx.abs() |> Nx.reduce_max() |> Nx.to_number()
@@ -48,7 +48,7 @@ defmodule ArmLLM.LLMLinearTest do
     w = Nx.iota({4, 6}, type: :f32) |> Nx.divide(20) |> Nx.subtract(0.5)
     b = Nx.tensor([0.0, 0.1, -0.1, 0.2])
 
-    got = ArmLLM.Primitives.linear(arm(x), arm(w), arm(b), :gelu)
+    got = InferLLM.Primitives.linear(arm(x), arm(w), arm(b), :gelu)
     ref = ref_linear(x, w, b, :gelu)
 
     diff = Nx.subtract(Nx.backend_copy(got, Nx.BinaryBackend), ref) |> Nx.abs() |> Nx.reduce_max() |> Nx.to_number()
@@ -59,7 +59,7 @@ defmodule ArmLLM.LLMLinearTest do
     x = Nx.iota({2, 3, 4}, type: :f32) |> Nx.divide(50)
     w = Nx.iota({5, 4}, type: :f32) |> Nx.divide(50)
 
-    got = ArmLLM.Primitives.linear(arm(x), arm(w), nil, :none)
+    got = InferLLM.Primitives.linear(arm(x), arm(w), nil, :none)
     ref = ref_linear(x, w, nil, :none)
 
     assert Nx.shape(got) == {2, 3, 5}
@@ -71,7 +71,7 @@ defmodule ArmLLM.LLMLinearTest do
     x = Nx.iota({1, 128}, type: :f32) |> Nx.divide(100) |> Nx.sin()
     w = Nx.iota({4000, 128}, type: :f32) |> Nx.divide(100) |> Nx.cos()
 
-    got = ArmLLM.Primitives.linear(arm(x), arm(w), nil, :none)
+    got = InferLLM.Primitives.linear(arm(x), arm(w), nil, :none)
     ref = ref_linear(x, w, nil, :none)
 
     assert Nx.shape(got) == {1, 4000}

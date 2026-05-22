@@ -1,4 +1,4 @@
-defmodule ArmLLM.MiniTransformerTest do
+defmodule InferLLM.MiniTransformerTest do
   @moduledoc """
   End-to-end: a 2-layer mini transformer forward on NxArm.Backend,
   compared against the same forward on Nx.BinaryBackend. Exercises
@@ -81,7 +81,7 @@ defmodule ArmLLM.MiniTransformerTest do
     d_ff = 64
 
     x = small_weight({seq, d_model})
-    mask = ArmLLM.Primitives.causal_mask(seq) |> Nx.broadcast({n_heads, seq, seq})
+    mask = InferLLM.Primitives.causal_mask(seq) |> Nx.broadcast({n_heads, seq, seq})
 
     layers =
       for layer_id <- 0..1 do
@@ -124,7 +124,7 @@ defmodule ArmLLM.MiniTransformerTest do
 
     x = small_weight({seq, d_model}) |> Nx.backend_copy(NxArm.Backend)
     mask =
-      ArmLLM.Primitives.causal_mask(seq)
+      InferLLM.Primitives.causal_mask(seq)
       |> Nx.broadcast({n_heads, seq, seq})
       |> Nx.backend_copy(NxArm.Backend)
 
@@ -143,8 +143,8 @@ defmodule ArmLLM.MiniTransformerTest do
     out = layer(x, ws, mask, n_heads)
     # Logits = last position
     last = Nx.slice(out, [seq - 1, 0], [1, d_model]) |> Nx.reshape({d_model})
-    token_a = ArmLLM.Sampling.greedy(last)
-    token_b = ArmLLM.Sampling.greedy(last)
+    token_a = InferLLM.Sampling.greedy(last)
+    token_b = InferLLM.Sampling.greedy(last)
     assert token_a == token_b
     assert token_a in 0..(d_model - 1)
   end

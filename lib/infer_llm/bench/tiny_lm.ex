@@ -1,4 +1,4 @@
-defmodule ArmLLM.Bench.TinyLM do
+defmodule InferLLM.Bench.TinyLM do
   @moduledoc """
   Synthetic tiny transformer LM benchmark. Builds a deterministic-
   weight model (no training, no real tokenizer) and times prefill
@@ -7,7 +7,7 @@ defmodule ArmLLM.Bench.TinyLM do
   Defaults: 4 layers, d_model=128, 4 heads, d_ff=512, vocab=4000.
   ~3M params, ~12 MB at f32. Fits comfortably on a FP3 (~1 GB RAM).
 
-      iex> ArmLLM.Bench.TinyLM.run()
+      iex> InferLLM.Bench.TinyLM.run()
       %{
         config: %{...},
         prefill_ms: 412.3,
@@ -157,7 +157,7 @@ defmodule ArmLLM.Bench.TinyLM do
 
   defp prefill(model, prompt) do
     x = embed_tokens(model, prompt)
-    mask = ArmLLM.Primitives.causal_mask(model.seq_prefill)
+    mask = InferLLM.Primitives.causal_mask(model.seq_prefill)
 
     h =
       Enum.reduce(model.layers, x, fn ws, acc ->
@@ -173,7 +173,7 @@ defmodule ArmLLM.Bench.TinyLM do
     Enum.reduce(1..n, last_logits, fn _, logits ->
       tok = greedy(logits)
       x = embed_tokens(model, [tok])
-      mask = ArmLLM.Primitives.causal_mask(1)
+      mask = InferLLM.Primitives.causal_mask(1)
 
       h =
         Enum.reduce(model.layers, x, fn ws, acc ->

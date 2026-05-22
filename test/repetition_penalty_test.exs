@@ -1,21 +1,21 @@
-defmodule ArmLLM.RepetitionPenaltyTest do
+defmodule InferLLM.RepetitionPenaltyTest do
   use ExUnit.Case, async: true
 
   test "no effect when recent_tokens empty or penalty 1.0" do
     logits = [1.0, 2.0, 3.0, 4.0]
-    assert ArmLLM.Sampling.apply_repetition_penalty(logits, [], 1.5) == [1.0, 2.0, 3.0, 4.0]
-    assert ArmLLM.Sampling.apply_repetition_penalty(logits, [0, 1], 1.0) == [1.0, 2.0, 3.0, 4.0]
+    assert InferLLM.Sampling.apply_repetition_penalty(logits, [], 1.5) == [1.0, 2.0, 3.0, 4.0]
+    assert InferLLM.Sampling.apply_repetition_penalty(logits, [0, 1], 1.0) == [1.0, 2.0, 3.0, 4.0]
   end
 
   test "positive logits get divided by penalty" do
     logits = [1.0, 2.0, 3.0, 4.0]
-    out = ArmLLM.Sampling.apply_repetition_penalty(logits, [2], 2.0)
+    out = InferLLM.Sampling.apply_repetition_penalty(logits, [2], 2.0)
     assert out == [1.0, 2.0, 1.5, 4.0]
   end
 
   test "negative logits get multiplied (pushed further down)" do
     logits = [-1.0, -2.0, 5.0]
-    out = ArmLLM.Sampling.apply_repetition_penalty(logits, [0, 1], 2.0)
+    out = InferLLM.Sampling.apply_repetition_penalty(logits, [0, 1], 2.0)
     assert out == [-2.0, -4.0, 5.0]
   end
 
@@ -25,9 +25,9 @@ defmodule ArmLLM.RepetitionPenaltyTest do
     # becomes 1.0, so token 1 (logit 5) wins.
     logits = Nx.tensor([1.0, 5.0, 10.0, 0.0])
 
-    assert ArmLLM.Sampling.sample(logits, temperature: 0.0) == 2
+    assert InferLLM.Sampling.sample(logits, temperature: 0.0) == 2
 
-    assert ArmLLM.Sampling.sample(logits,
+    assert InferLLM.Sampling.sample(logits,
              temperature: 0.0,
              repetition_penalty: 10.0,
              recent_tokens: [2]

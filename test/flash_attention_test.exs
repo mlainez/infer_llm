@@ -1,4 +1,4 @@
-defmodule ArmLLM.FlashAttentionTest do
+defmodule InferLLM.FlashAttentionTest do
   use ExUnit.Case, async: true
 
   defp ref_attention(q, k, v, scale, causal? \\ false) do

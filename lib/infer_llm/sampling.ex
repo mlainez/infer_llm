@@ -1,4 +1,4 @@
-defmodule ArmLLM.Sampling do
+defmodule InferLLM.Sampling do
   @moduledoc """
   Sampling helpers for autoregressive LM token generation.
 
@@ -16,7 +16,7 @@ defmodule ArmLLM.Sampling do
   ## Example
 
       logits = forward_model.(tokens)            # {vocab}
-      next_id = ArmLLM.Sampling.sample(logits, top_k: 40, top_p: 0.9, temperature: 0.8)
+      next_id = InferLLM.Sampling.sample(logits, top_k: 40, top_p: 0.9, temperature: 0.8)
   """
 
   @doc """
@@ -112,7 +112,7 @@ defmodule ArmLLM.Sampling do
   per step.
 
       tokens =
-        ArmLLM.Sampling.generate(initial_state, &model_step/2,
+        InferLLM.Sampling.generate(initial_state, &model_step/2,
           start_token: bos,
           sampling: [top_k: 50, top_p: 0.95, temperature: 0.8]
         )

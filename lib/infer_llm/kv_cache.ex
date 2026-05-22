@@ -1,4 +1,4 @@
-defmodule ArmLLM.KVCache do
+defmodule InferLLM.KVCache do
   @moduledoc """
   Append-style key/value cache for transformer decoders.
 
@@ -7,9 +7,9 @@ defmodule ArmLLM.KVCache do
   the current sequence length. Decode-step writes hit one layer's
   K/V row directly — no zero-tensor allocation per layer-step.
 
-      cache = ArmLLM.KVCache.new(n_layers, n_kv_heads, max_seq, head_dim)
-      cache = ArmLLM.KVCache.append_layer(cache, layer_idx, k_row, v_row)
-      {k_for_attn, v_for_attn} = ArmLLM.KVCache.layer_view(cache, layer_idx)
+      cache = InferLLM.KVCache.new(n_layers, n_kv_heads, max_seq, head_dim)
+      cache = InferLLM.KVCache.append_layer(cache, layer_idx, k_row, v_row)
+      {k_for_attn, v_for_attn} = InferLLM.KVCache.layer_view(cache, layer_idx)
 
   The cursor advances when the caller bumps it explicitly via
   `advance/1`, since within one timestep we write to every layer

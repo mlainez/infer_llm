@@ -1,8 +1,8 @@
-defmodule ArmLLM.LLMGTest do
+defmodule InferLLM.LLMGTest do
   use ExUnit.Case, async: true
 
   test "causal_mask is lower-triangular with 0 / -inf" do
-    m = ArmLLM.Primitives.causal_mask(4)
+    m = InferLLM.Primitives.causal_mask(4)
     assert Nx.shape(m) == {4, 4}
 
     rows = Nx.to_list(m)
@@ -13,7 +13,7 @@ defmodule ArmLLM.LLMGTest do
   end
 
   test "causal_mask custom masked_value + dtype" do
-    m = ArmLLM.Primitives.causal_mask(3, type: :f32, masked_value: -1.0e10)
+    m = InferLLM.Primitives.causal_mask(3, type: :f32, masked_value: -1.0e10)
     rows = Nx.to_list(m)
     assert hd(rows) |> hd() == 0.0
     assert hd(rows) |> Enum.at(1) < -1.0e9
@@ -21,20 +21,20 @@ defmodule ArmLLM.LLMGTest do
   end
 
   test "decode_mask is all zeros (every cached pos is in the past)" do
-    m = ArmLLM.Primitives.decode_mask(5)
+    m = InferLLM.Primitives.decode_mask(5)
     assert Nx.shape(m) == {1, 5}
     assert Nx.to_flat_list(m) == [0.0, 0.0, 0.0, 0.0, 0.0]
   end
 
   test "rope_at delegates to rope/3 at one position" do
     head_dim = 4
-    inv_freq = ArmLLM.Primitives.rope_inv_freq(head_dim)
+    inv_freq = InferLLM.Primitives.rope_inv_freq(head_dim)
 
     qk = Nx.iota({1, 1, 1, head_dim}, type: :f32) |> Nx.divide(10)
 
     pos_tensor = Nx.tensor([3], type: :s64)
-    expected = ArmLLM.Primitives.rope(qk, pos_tensor, inv_freq)
-    got = ArmLLM.Primitives.rope_at(qk, 3, inv_freq)
+    expected = InferLLM.Primitives.rope(qk, pos_tensor, inv_freq)
+    got = InferLLM.Primitives.rope_at(qk, 3, inv_freq)
 
     diff =
       Nx.subtract(got, expected)

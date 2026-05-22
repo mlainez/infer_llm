@@ -26,7 +26,7 @@ unless Enum.all?(required, &File.exists?/1) do
 end
 
 IO.puts("Decoding audio at #{audio_path}...")
-pcm = ArmAI.Audio.load_for_whisper(audio_path)
+pcm = InferAudio.Decoder.load_for_whisper(audio_path)
 IO.puts("  → #{Nx.size(pcm)} samples at 16 kHz (#{Float.round(Nx.size(pcm) / 16_000, 2)} s)")
 
 IO.puts("Loading Whisper...")

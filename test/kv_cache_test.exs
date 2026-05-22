@@ -1,26 +1,26 @@
-defmodule ArmLLM.KVCacheTest do
+defmodule InferLLM.KVCacheTest do
   use ExUnit.Case, async: true
 
   test "new + append + prefix" do
-    c = ArmLLM.KVCache.new(2, 3, 8, 4)
+    c = InferLLM.KVCache.new(2, 3, 8, 4)
 
     assert c.length == 0
-    assert_raise ArgumentError, fn -> ArmLLM.KVCache.prefix(c) end
+    assert_raise ArgumentError, fn -> InferLLM.KVCache.prefix(c) end
 
     k_step = Nx.iota({2, 3, 1, 4}, type: :f32) |> Nx.divide(10)
     v_step = Nx.iota({2, 3, 1, 4}, type: :f32) |> Nx.add(100) |> Nx.divide(10)
 
-    c1 = ArmLLM.KVCache.append(c, k_step, v_step)
+    c1 = InferLLM.KVCache.append(c, k_step, v_step)
     assert c1.length == 1
 
-    {k1, v1} = ArmLLM.KVCache.prefix(c1)
+    {k1, v1} = InferLLM.KVCache.prefix(c1)
     assert Nx.shape(k1) == {2, 3, 1, 4}
     assert Nx.to_flat_list(k1) == Nx.to_flat_list(k_step)
     assert Nx.to_flat_list(v1) == Nx.to_flat_list(v_step)
   end
 
   test "append two steps preserves history" do
-    c = ArmLLM.KVCache.new(1, 2, 8, 3)
+    c = InferLLM.KVCache.new(1, 2, 8, 3)
     s1_k = Nx.tensor([[[[1.0, 2.0, 3.0]], [[4.0, 5.0, 6.0]]]])
     s1_v = Nx.tensor([[[[10.0, 20.0, 30.0]], [[40.0, 50.0, 60.0]]]])
     s2_k = Nx.tensor([[[[7.0, 8.0, 9.0]], [[10.0, 11.0, 12.0]]]])
@@ -28,12 +28,12 @@ defmodule ArmLLM.KVCacheTest do
 
     c =
       c
-      |> ArmLLM.KVCache.append(s1_k, s1_v)
-      |> ArmLLM.KVCache.append(s2_k, s2_v)
+      |> InferLLM.KVCache.append(s1_k, s1_v)
+      |> InferLLM.KVCache.append(s2_k, s2_v)
 
     assert c.length == 2
 
-    {k, v} = ArmLLM.KVCache.prefix(c)
+    {k, v} = InferLLM.KVCache.prefix(c)
     assert Nx.shape(k) == {1, 2, 2, 3}
 
     # Layer 0, head 0, positions 0 and 1 should hold s1_k row, s2_k row.
@@ -43,12 +43,12 @@ defmodule ArmLLM.KVCacheTest do
   end
 
   test "layer/2 returns one layer's K/V" do
-    c = ArmLLM.KVCache.new(3, 2, 4, 2)
+    c = InferLLM.KVCache.new(3, 2, 4, 2)
     k_step = Nx.iota({3, 2, 1, 2}, type: :f32)
     v_step = Nx.iota({3, 2, 1, 2}, type: :f32) |> Nx.add(100)
-    c = ArmLLM.KVCache.append(c, k_step, v_step)
+    c = InferLLM.KVCache.append(c, k_step, v_step)
 
-    {k_l1, v_l1} = ArmLLM.KVCache.layer(c, 1)
+    {k_l1, v_l1} = InferLLM.KVCache.layer(c, 1)
     assert Nx.shape(k_l1) == {2, 1, 2}
     # Layer 1 starts at offset (n_heads * head_dim) = 2*2 = 4 in iota.
     assert Nx.to_flat_list(k_l1) == [4.0, 5.0, 6.0, 7.0]
@@ -56,22 +56,22 @@ defmodule ArmLLM.KVCacheTest do
   end
 
   test "append past max_seq raises" do
-    c = ArmLLM.KVCache.new(1, 1, 1, 2)
+    c = InferLLM.KVCache.new(1, 1, 1, 2)
     step = Nx.tensor([[[[1.0, 2.0]]]])
-    c1 = ArmLLM.KVCache.append(c, step, step)
-    assert_raise ArgumentError, fn -> ArmLLM.KVCache.append(c1, step, step) end
+    c1 = InferLLM.KVCache.append(c, step, step)
+    assert_raise ArgumentError, fn -> InferLLM.KVCache.append(c1, step, step) end
   end
 
   test "reset moves cursor without clearing storage" do
-    c = ArmLLM.KVCache.new(1, 1, 4, 2)
+    c = InferLLM.KVCache.new(1, 1, 4, 2)
     step = Nx.tensor([[[[1.0, 2.0]]]])
-    c = ArmLLM.KVCache.append(c, step, step) |> ArmLLM.KVCache.reset()
+    c = InferLLM.KVCache.append(c, step, step) |> InferLLM.KVCache.reset()
     assert c.length == 0
 
     # After reset, prefix raises (empty) but a fresh append works.
     new_step = Nx.tensor([[[[3.0, 4.0]]]])
-    c = ArmLLM.KVCache.append(c, new_step, new_step)
-    {k, _} = ArmLLM.KVCache.prefix(c)
+    c = InferLLM.KVCache.append(c, new_step, new_step)
+    {k, _} = InferLLM.KVCache.prefix(c)
     assert Nx.shape(k) == {1, 1, 1, 2}
     assert Nx.to_flat_list(k) == [3.0, 4.0]
   end

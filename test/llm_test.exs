@@ -1,4 +1,4 @@
-defmodule ArmLLM.LLMTest do
+defmodule InferLLM.LLMTest do
   use ExUnit.Case, async: true
 
   describe "rmsnorm" do
@@ -8,7 +8,7 @@ defmodule ArmLLM.LLMTest do
       eps = 1.0e-5
 
       got =
-        ArmLLM.Primitives.rmsnorm(x, gamma, eps)
+        InferLLM.Primitives.rmsnorm(x, gamma, eps)
         |> Nx.backend_copy(Nx.BinaryBackend)
 
       # Reference via primitives.
@@ -24,7 +24,7 @@ defmodule ArmLLM.LLMTest do
       gamma = Nx.iota({768}, type: :f32) |> Nx.divide(100)
 
       got =
-        ArmLLM.Primitives.rmsnorm(x, gamma)
+        InferLLM.Primitives.rmsnorm(x, gamma)
         |> Nx.backend_copy(Nx.BinaryBackend)
 
       rms = Nx.sqrt(Nx.add(Nx.mean(Nx.pow(x, 2), axes: [-1], keep_axes: true), 1.0e-5))
@@ -39,11 +39,11 @@ defmodule ArmLLM.LLMTest do
     test "round-trip at position 0 is identity (cos(0)=1, sin(0)=0)" do
       head_dim = 8
       qk = Nx.iota({1, 1, 2, head_dim}, type: :f32) |> Nx.divide(10)
-      inv_freq = ArmLLM.Primitives.rope_inv_freq(head_dim)
+      inv_freq = InferLLM.Primitives.rope_inv_freq(head_dim)
       positions = Nx.tensor([0], type: :s64)
 
       got =
-        ArmLLM.Primitives.rope(qk, positions, inv_freq)
+        InferLLM.Primitives.rope(qk, positions, inv_freq)
         |> Nx.backend_copy(Nx.BinaryBackend)
 
       # At pos=0, cos(0*freq)=1 and sin(0*freq)=0, so RoPE is identity.
@@ -54,10 +54,10 @@ defmodule ArmLLM.LLMTest do
     test "preserves vector magnitudes (rotation is unitary)" do
       head_dim = 8
       qk = Nx.iota({1, 4, 2, head_dim}, type: :f32) |> Nx.divide(10)
-      inv_freq = ArmLLM.Primitives.rope_inv_freq(head_dim)
+      inv_freq = InferLLM.Primitives.rope_inv_freq(head_dim)
       positions = Nx.tensor([0, 1, 2, 3], type: :s64)
 
-      got = ArmLLM.Primitives.rope(qk, positions, inv_freq)
+      got = InferLLM.Primitives.rope(qk, positions, inv_freq)
       got_b = Nx.backend_copy(got, Nx.BinaryBackend)
 
       # Per (batch, token, head), the L2 norm of head_dim values should
@@ -76,7 +76,7 @@ defmodule ArmLLM.LLMTest do
       positions = Nx.tensor([1], type: :s64)
 
       got =
-        ArmLLM.Primitives.rope(qk, positions, inv_freq)
+        InferLLM.Primitives.rope(qk, positions, inv_freq)
         |> Nx.backend_copy(Nx.BinaryBackend)
 
       # theta = 1 * 1.0 = 1.0; cos(1) ≈ 0.5403, sin(1) ≈ 0.8415

@@ -1,19 +1,19 @@
-defmodule ArmLLM.MixProject do
+defmodule InferLLM.MixProject do
   use Mix.Project
 
   @version "0.1.0"
 
   def project do
     [
-      app: :arm_llm,
+      app: :infer_llm,
       version: @version,
       elixir: "~> 1.15",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      name: "ArmLLM",
+      name: "LLM",
       description:
-        "Nx-tensor wrappers for quantized LLM + STT inference on ARM CPUs (Llama / Whisper / TinyLlama / SmolLM via Candle)",
+        "Generic Nx-tensor wrappers for quantized LLM + STT inference with a pluggable native backend (see `InferLLM.Backend`).",
       package: package(),
       docs: [main: "readme", extras: ["README.md"]]
     ]
@@ -26,22 +26,24 @@ defmodule ArmLLM.MixProject do
 
   defp deps do
     [
-      {:rustler, "~> 0.36", optional: true},
-      {:rustler_precompiled, "~> 0.8"},
       {:nx, "~> 0.9"},
-      {:arm_ai, path: "../arm_ai"},
-      {:nx_arm, path: "../nx_arm"},
-      {:arm_nx_primitives, path: "../arm_nx_primitives"},
-      {:tokenizers, "~> 0.5"}
+      {:tokenizers, "~> 0.5"},
+      # Generic primitives — also a behaviour-driven library.
+      {:nx_primitives, path: "../nx_primitives"},
+      # Tests need a concrete backend; we use arm_ai.
+      {:arm_ai, path: "../arm_ai", only: [:dev, :test]},
+      {:nx_arm, path: "../nx_arm", only: [:dev, :test]},
+      {:rustler, "~> 0.36", optional: true},
+      {:rustler_precompiled, "~> 0.8"}
     ]
   end
 
   defp package do
     [
-      name: :arm_llm,
+      name: :infer_llm,
       licenses: ["Apache-2.0"],
       files: ~w(lib mix.exs README.md),
-      links: %{"GitHub" => "https://github.com/marclainez/arm_llm"}
+      links: %{"GitHub" => "https://github.com/marclainez/infer_llm"}
     ]
   end
 end
