@@ -8,6 +8,7 @@ defmodule ArmLLM.MixProject do
       app: :arm_llm,
       version: @version,
       elixir: "~> 1.15",
+      elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       name: "ArmLLM",
@@ -19,6 +20,9 @@ defmodule ArmLLM.MixProject do
   end
 
   def application, do: [extra_applications: [:logger]]
+
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_), do: ["lib"]
 
   defp deps do
     [
