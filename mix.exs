@@ -29,10 +29,10 @@ defmodule InferLLM.MixProject do
       {:nx, "~> 0.9"},
       {:tokenizers, "~> 0.5"},
       # Generic primitives — also a behaviour-driven library.
-      {:nx_primitives, path: "../nx_primitives"},
+      {:nx_primitives, github: "mlainez/nx_primitives"},
       # Tests need a concrete backend; we use arm_ai.
-      {:arm_ai, path: "../arm_ai", only: [:dev, :test]},
-      {:nx_arm, path: "../nx_arm", only: [:dev, :test]},
+      {:arm_ai, github: "mlainez/arm_ai", only: [:dev, :test]},
+      {:nx_arm, github: "mlainez/nx_arm", only: [:dev, :test]},
       {:rustler, "~> 0.36", optional: true},
       {:rustler_precompiled, "~> 0.8"}
     ]
