@@ -13,7 +13,7 @@ defmodule InferLLM do
 
   ## Backend
 
-      config :llm, backend: ArmAI.LLMBackend
+      config :infer_llm, backend: ArmAI.LLMBackend
 
   ## Raw-binary LLM (no Nx)
 

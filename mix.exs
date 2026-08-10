@@ -42,8 +42,8 @@ defmodule InferLLM.MixProject do
     [
       name: :infer_llm,
       licenses: ["Apache-2.0"],
-      files: ~w(lib mix.exs README.md),
-      links: %{"GitHub" => "https://github.com/marclainez/infer_llm"}
+      files: ~w(lib mix.exs README.md LICENSE),
+      links: %{"GitHub" => "https://github.com/mlainez/infer_llm"}
     ]
   end
 end

@@ -8,7 +8,7 @@ defmodule InferLLM.Backend do
 
   ## Configuring the active backend
 
-      config :llm, backend: ArmAI.LLMBackend
+      config :infer_llm, backend: ArmAI.LLMBackend
 
   Override per-call with the `backend:` option on any `LLM.*`
   function.
@@ -33,7 +33,7 @@ defmodule InferLLM.Backend do
         raise """
         No LLM backend configured. Add one to your config:
 
-            config :llm, backend: ArmAI.LLMBackend
+            config :infer_llm, backend: ArmAI.LLMBackend
 
         Or pass `backend:` explicitly to the LLM.* call.
         """
