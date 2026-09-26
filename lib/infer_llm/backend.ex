@@ -1,17 +1,12 @@
 defmodule InferLLM.Backend do
   @moduledoc """
-  Behaviour for LLM/STT inference backends.
-
-  An implementation provides candle-style model loading + decode
-  for both decoder LLMs (Llama family, via the binary token API)
-  and Whisper STT.
+  Behaviour for speech-to-text backends (Whisper load + transcribe).
 
   ## Configuring the active backend
 
       config :infer_llm, backend: ArmAI.LLMBackend
 
-  Override per-call with the `backend:` option on any `LLM.*`
-  function.
+  Override per call with the `backend:` option.
   """
 
   @doc "Load a Whisper model. Returns an opaque handle the backend will recognise."
@@ -31,11 +26,11 @@ defmodule InferLLM.Backend do
     case Keyword.get(opts, :backend) || Application.get_env(:infer_llm, :backend) do
       nil ->
         raise """
-        No LLM backend configured. Add one to your config:
+        No InferLLM backend configured. Add one to your config:
 
             config :infer_llm, backend: ArmAI.LLMBackend
 
-        Or pass `backend:` explicitly to the LLM.* call.
+        Or pass `backend:` explicitly to the call.
         """
 
       backend when is_atom(backend) ->

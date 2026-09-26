@@ -1,11 +1,12 @@
 defmodule InferLLM.Primitives do
   @moduledoc """
-  Helpers for transformer-LM architectures (Llama / Mistral / Phi / Qwen):
-  RMSNorm, RoPE, plus small utilities.
+  Building blocks for transformer decoders (Llama-style): linear,
+  RMSNorm, RoPE, and causal masks.
 
-  These are direct NIF wrappers — not yet picked up by `NxArm.Compiler`
-  pattern fusion. Use them directly in your forward function (or
-  in a custom Axon layer) until the compiler-side support lands.
+  `linear`, `rmsnorm` and `rope` call the `arm_ai` NEON kernels directly
+  and return `NxArm.Backend` tensors, so `arm_ai` and `nx_arm` must be in
+  your deps. The mask helpers are pure Nx. Use them directly in a forward
+  function or a custom Axon layer; `NxArm.Compiler` does not fuse them.
   """
 
   @doc """

@@ -1,25 +1,23 @@
 defmodule InferLLM do
   @moduledoc """
-  Generic Nx-tensor wrappers for LLM + STT inference, with a
-  pluggable native backend.
+  Nx helpers for LLM inference, plus Whisper speech-to-text behind a
+  pluggable backend.
 
   * `InferLLM.Whisper` — Whisper STT (delegates to `InferLLM.Backend`)
-  * `InferLLM.Primitives` — RMSNorm, RoPE Nx primitives (currently
-    coupled to `ArmAI.Native`; backend split is TODO)
-  * `InferLLM.KVCache` — Nx-tensor KV cache helper (pure Nx, no NIF)
-  * `InferLLM.Sampling` — top-k / top-p / temperature / repetition
-    penalty (pure Nx)
-  * `InferLLM.Bench.TinyLM` — micro-benchmark for a tiny transformer
+  * `InferLLM.Sampling` — greedy / temperature / top-k / top-p sampling
+    and repetition penalty (pure Elixir + Nx)
+  * `InferLLM.KVCache` — preallocated per-layer KV cache (pure Nx)
+  * `InferLLM.Primitives` — linear, RMSNorm and RoPE on the `arm_ai`
+    NEON kernels (requires `arm_ai` + `nx_arm`), plus causal masks
 
   ## Backend
 
       config :infer_llm, backend: ArmAI.LLMBackend
 
-  ## Raw-binary LLM (no Nx)
+  ## Decoder LLMs
 
-  For decoder LLMs (Llama / TinyLlama / SmolLM / Phi / Qwen) the
-  binary token API `ArmAI.LlamaCandle` is the right home — token
-  IDs in, token IDs out, no Nx tensors involved. It lives in the
-  `:arm_ai` package directly.
+  For quantized decoder LLMs (Llama / TinyLlama / SmolLM GGUF files) use
+  `ArmAI.LlamaCandle` from the `arm_ai` package: token ids in, token ids
+  out, no Nx tensors involved.
   """
 end
