@@ -7,13 +7,13 @@ defmodule InferLLM.MixProject do
     [
       app: :infer_llm,
       version: @version,
-      elixir: "~> 1.15",
+      elixir: "~> 1.17",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      name: "LLM",
+      name: "InferLLM",
       description:
-        "Generic Nx-tensor wrappers for quantized LLM + STT inference with a pluggable native backend (see `InferLLM.Backend`).",
+        "Nx helpers for LLM inference (KV cache, sampling, transformer primitives) and Whisper speech-to-text with a pluggable native backend (see `InferLLM.Backend`).",
       package: package(),
       docs: [main: "readme", extras: ["README.md"]]
     ]
@@ -26,15 +26,11 @@ defmodule InferLLM.MixProject do
 
   defp deps do
     [
-      {:nx, "~> 0.9"},
-      {:tokenizers, "~> 0.5"},
-      # Generic primitives — also a behaviour-driven library.
-      {:nx_primitives, github: "mlainez/nx_primitives"},
-      # Tests need a concrete backend; we use arm_ai.
-      {:arm_ai, github: "mlainez/arm_ai", only: [:dev, :test]},
-      {:nx_arm, github: "mlainez/nx_arm", only: [:dev, :test]},
-      {:rustler, "~> 0.36", optional: true},
-      {:rustler_precompiled, "~> 0.8"}
+      {:nx, "~> 0.12.0"},
+      # Optional: InferLLM.Primitives calls the arm_ai NIF and returns
+      # NxArm.Backend tensors, and ArmAI.LLMBackend is the only backend.
+      {:arm_ai, github: "mlainez/arm_ai", optional: true},
+      {:nx_arm, github: "mlainez/nx_arm", optional: true}
     ]
   end
 
