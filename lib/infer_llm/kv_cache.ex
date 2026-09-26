@@ -14,6 +14,9 @@ defmodule InferLLM.KVCache do
   The cursor advances when the caller bumps it explicitly via
   `advance/1`, since within one timestep we write to every layer
   with the same cursor value.
+
+  Pure Nx: the tensors live on `Nx.default_backend/0` unless you pass
+  `backend:` to `new/5`.
   """
 
   defstruct [:k_layers, :v_layers, :length, :max_seq, :n_layers, :n_heads, :head_dim, :type]
@@ -36,7 +39,7 @@ defmodule InferLLM.KVCache do
   @spec new(pos_integer(), pos_integer(), pos_integer(), pos_integer(), Keyword.t()) :: t()
   def new(n_layers, n_heads, max_seq, head_dim, opts \\ []) do
     type = Keyword.get(opts, :type, {:f, 32})
-    backend = Keyword.get(opts, :backend, NxArm.Backend)
+    backend = Keyword.get(opts, :backend, Nx.default_backend())
     layer_shape = {n_heads, max_seq, head_dim}
 
     zero =
